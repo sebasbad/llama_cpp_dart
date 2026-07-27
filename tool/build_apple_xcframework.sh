@@ -243,9 +243,9 @@ build_slice "macos-arm64"         "Darwin" "macosx"          "$MACOS_MIN"
 # ----- assemble xcframework -----
 rm -rf "$XCF_OUT"
 xcodebuild -create-xcframework \
-  -framework "$OUT_ROOT/build-ios-arm64/framework/llama.framework" \
-  -framework "$OUT_ROOT/build-ios-arm64-simulator/framework/llama.framework" \
-  -framework "$OUT_ROOT/build-macos-arm64/framework/llama.framework" \
+  -framework "$OUT_ROOT/build-ios-arm64/framework/Llama.framework" \
+  -framework "$OUT_ROOT/build-ios-arm64-simulator/framework/Llama.framework" \
+  -framework "$OUT_ROOT/build-macos-arm64/framework/Llama.framework" \
   -output "$XCF_OUT"
 
 echo
