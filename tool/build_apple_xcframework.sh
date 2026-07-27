@@ -113,13 +113,14 @@ build_slice() {
   local sys_name="$2"
   local sysroot="$3"
   local min_version="$4"
+  local archs="${5:-arm64}"
 
   local build_dir="$OUT_ROOT/build-$slice"
   local fw_dir="$build_dir/framework/Llama.framework"
 
   echo
   echo "==== building slice: $slice"
-  echo "      system=$sys_name sysroot=$sysroot deployment=$min_version"
+  echo "      system=$sys_name sysroot=$sysroot deployment=$min_version archs=$archs"
 
   rm -rf "$build_dir"
   mkdir -p "$fw_dir/Headers" "$fw_dir/Modules"
@@ -127,7 +128,7 @@ build_slice() {
   cmake -G Ninja -B "$build_dir" -S "$LLAMA_SRC" \
     -DCMAKE_SYSTEM_NAME="$sys_name" \
     -DCMAKE_OSX_SYSROOT="$sysroot" \
-    -DCMAKE_OSX_ARCHITECTURES=arm64 \
+    -DCMAKE_OSX_ARCHITECTURES="$archs" \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="$min_version" \
     "${COMMON_ARGS[@]}"
 
@@ -160,9 +161,16 @@ build_slice() {
     macosx)          min_flag="-mmacosx-version-min=$min_version" ;;
     *) echo "error: unknown sysroot $sysroot" >&2; exit 1 ;;
   esac
+
+  local arch_flags=()
+  IFS=';' read -ra ARCH_ARRAY <<< "$archs"
+  for a in "${ARCH_ARRAY[@]}"; do
+    arch_flags+=("-arch" "$a")
+  done
+
   echo "  linking ${#archives[@]} archives into dynamic framework binary"
   xcrun --sdk "$sysroot" clang++ -dynamiclib \
-    -arch arm64 -isysroot "$sdk_path" "$min_flag" \
+    "${arch_flags[@]}" -isysroot "$sdk_path" "$min_flag" \
     -install_name @rpath/Llama.framework/Llama \
     -Wl,-all_load "${archives[@]}" \
     -framework Foundation -framework Metal -framework MetalKit -framework Accelerate \
@@ -236,9 +244,9 @@ EOF
 }
 
 # ----- build each slice -----
-build_slice "ios-arm64"           "iOS"    "iphoneos"        "$IOS_MIN"
-build_slice "ios-arm64-simulator" "iOS"    "iphonesimulator" "$IOS_MIN"
-build_slice "macos-arm64"         "Darwin" "macosx"          "$MACOS_MIN"
+build_slice "ios-arm64"           "iOS"    "iphoneos"        "$IOS_MIN" "arm64"
+build_slice "ios-arm64-simulator" "iOS"    "iphonesimulator" "$IOS_MIN" "arm64;x86_64"
+build_slice "macos-arm64"         "Darwin" "macosx"          "$MACOS_MIN" "arm64"
 
 # ----- assemble xcframework -----
 rm -rf "$XCF_OUT"
