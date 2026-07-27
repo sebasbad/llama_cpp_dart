@@ -15,6 +15,7 @@
 # Silicon Mac (arm64 host).
 
 set -euo pipefail
+export DEVELOPER_DIR="$(xcode-select -p)"
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LLAMA_SRC="$PROJECT_ROOT/src/llama.cpp"
@@ -123,7 +124,7 @@ build_slice() {
   rm -rf "$build_dir"
   mkdir -p "$fw_dir/Headers" "$fw_dir/Modules"
 
-  cmake -G Xcode -B "$build_dir" -S "$LLAMA_SRC" \
+  cmake -G Ninja -B "$build_dir" -S "$LLAMA_SRC" \
     -DCMAKE_SYSTEM_NAME="$sys_name" \
     -DCMAKE_OSX_SYSROOT="$sysroot" \
     -DCMAKE_OSX_ARCHITECTURES=arm64 \
@@ -139,7 +140,7 @@ build_slice() {
   # depending on the slice — match all three with one path glob.
   local archives=()
   while IFS= read -r -d '' a; do archives+=("$a"); done < <(
-    find "$build_dir" -name '*.a' \( -path '*/Release/*' -o -path '*/Release-*' \) -print0 2>/dev/null
+    find "$build_dir" -name '*.a' -print0 2>/dev/null
   )
   if [[ ${#archives[@]} -eq 0 ]]; then
     echo "error: no .a archives found under $build_dir" >&2
