@@ -4,10 +4,10 @@
 <plist version="1.0">
 <dict>
   <key>CFBundleDevelopmentRegion</key><string>en</string>
-  <key>CFBundleExecutable</key><string>llama</string>
+  <key>CFBundleExecutable</key><string>Llama</string>
   <key>CFBundleIdentifier</key><string>org.ggml.llama</string>
   <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
-  <key>CFBundleName</key><string>llama</string>
+  <key>CFBundleName</key><string>Llama</string>
   <key>CFBundlePackageType</key><string>FMWK</string>
   <key>CFBundleShortVersionString</key><string>0.9.0</string>
   <key>CFBundleVersion</key><string>1</string>

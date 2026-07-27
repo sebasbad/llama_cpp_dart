@@ -115,7 +115,7 @@ build_slice() {
   local min_version="$4"
 
   local build_dir="$OUT_ROOT/build-$slice"
-  local fw_dir="$build_dir/framework/llama.framework"
+  local fw_dir="$build_dir/framework/Llama.framework"
 
   echo
   echo "==== building slice: $slice"
@@ -163,10 +163,10 @@ build_slice() {
   echo "  linking ${#archives[@]} archives into dynamic framework binary"
   xcrun --sdk "$sysroot" clang++ -dynamiclib \
     -arch arm64 -isysroot "$sdk_path" "$min_flag" \
-    -install_name @rpath/llama.framework/llama \
+    -install_name @rpath/Llama.framework/Llama \
     -Wl,-all_load "${archives[@]}" \
     -framework Foundation -framework Metal -framework MetalKit -framework Accelerate \
-    -o "$fw_dir/llama"
+    -o "$fw_dir/Llama"
   # (framework bundle is ad-hoc signed at the end of build_slice, after the
   # Info.plist exists, so the signing identifier is the CFBundleIdentifier)
 
@@ -178,7 +178,7 @@ build_slice() {
 
   # Module map for Swift interop (harmless for Dart users).
   cat >"$fw_dir/Modules/module.modulemap" <<EOF
-framework module llama {
+framework module Llama {
   umbrella header "llama.h"
   export *
   module * { export * }
@@ -194,10 +194,10 @@ EOF
 <plist version="1.0">
 <dict>
   <key>CFBundleDevelopmentRegion</key><string>en</string>
-  <key>CFBundleExecutable</key><string>llama</string>
+  <key>CFBundleExecutable</key><string>Llama</string>
   <key>CFBundleIdentifier</key><string>org.ggml.llama</string>
   <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
-  <key>CFBundleName</key><string>llama</string>
+  <key>CFBundleName</key><string>Llama</string>
   <key>CFBundlePackageType</key><string>FMWK</string>
   <key>CFBundleShortVersionString</key><string>0.9.0</string>
   <key>CFBundleVersion</key><string>1</string>
@@ -213,12 +213,12 @@ EOF
   if [[ "$sys_name" == "Darwin" ]]; then
     local v="$fw_dir/Versions/A"
     mkdir -p "$v/Resources"
-    mv "$fw_dir/llama"      "$v/llama"
+    mv "$fw_dir/Llama"      "$v/Llama"
     mv "$fw_dir/Headers"    "$v/Headers"
     mv "$fw_dir/Modules"    "$v/Modules"
     mv "$fw_dir/Info.plist" "$v/Resources/Info.plist"
     ln -sfn A                         "$fw_dir/Versions/Current"
-    ln -sfn Versions/Current/llama     "$fw_dir/llama"
+    ln -sfn Versions/Current/Llama     "$fw_dir/Llama"
     ln -sfn Versions/Current/Headers   "$fw_dir/Headers"
     ln -sfn Versions/Current/Modules   "$fw_dir/Modules"
     ln -sfn Versions/Current/Resources "$fw_dir/Resources"

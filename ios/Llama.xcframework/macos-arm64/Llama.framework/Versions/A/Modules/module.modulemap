@@ -1,4 +1,4 @@
-framework module llama {
+framework module Llama {
   umbrella header "llama.h"
   export *
   module * { export * }
