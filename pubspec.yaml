@@ -36,8 +36,6 @@ ffigen:
 flutter:
   plugin:
     platforms:
-      android:
-        ffiPlugin: true
       ios:
         ffiPlugin: true
       macos:
