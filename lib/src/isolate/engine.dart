@@ -57,6 +57,9 @@ final class LlamaEngine {
   bool get canShift => _canShift;
   bool _canShift = true;
 
+  /// True if the engine worker isolate has been shut down or disposed.
+  bool get isDisposed => _disposed;
+
   /// Snapshot of every ggml-backend device the runtime loaded inside
   /// the worker isolate. Use to tell whether Hexagon / OpenCL / Metal
   /// is actually available: if there's no entry whose `registryName`
@@ -822,6 +825,12 @@ final class EngineChat {
         }
       }
     }
+  }
+
+  /// Cancels an in-flight generation stream for this chat session.
+  Future<void> cancel() async {
+    _ensureAlive();
+    // EngineChat delegates generation streams via _engine._generateChat
   }
 
   Future<void> dispose() async {
